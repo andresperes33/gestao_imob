@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if is_create %}Novo Tenant{% else %}Editar Tenant{% endif %} — Gestão Imob{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex flex-col">
+  <header class="border-b" style="border-color:var(--color-border);background:var(--color-bg-secondary);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m12 3 9 4.5-9 4.5-9-4.5L12 3Z"/><path d="m3 12 9 4.5 9-4.5"/><path d="m3 16.5 9 4.5 9-4.5"/>
+          </svg>
+          <span class="text-lg font-light tracking-tight" style="font-family:'Geist',sans-serif;letter-spacing:-0.05em;">Gestão Imob</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <a href="{% url 'tenant_list' %}" class="text-sm px-4 py-1.5 rounded-lg transition-all" style="border:1px solid var(--color-border);color:var(--color-text-secondary);font-family:'Geist',sans-serif;">Voltar</a>
+          <span class="text-sm" style="color:var(--color-text-secondary);">{{ request.user.get_full_name|default:request.user.username }}</span>
+          <a href="{% url 'logout' %}" class="text-sm px-4 py-1.5 rounded-lg transition-all" style="border:1px solid var(--color-border);color:var(--color-text-secondary);font-family:'Geist',sans-serif;">Sair</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="animate-blur-in">
+        <h1 class="text-3xl font-light tracking-tight mb-1" style="font-family:'Geist',sans-serif;letter-spacing:-0.05em;">
+          {% if is_create %}Novo Tenant{% else %}Editar Tenant{% endif %}
+        </h1>
+        <p class="text-sm mb-8" style="color:var(--color-text-secondary);">
+          {% if is_create %}Cadastre um novo corretor ou imobiliária no sistema.{% else %}Atualize os dados do tenant.{% endif %}
+        </p>
+
+        <div class="rounded-xl p-8 border" style="background:var(--color-bg-card);border-color:var(--color-border);">
+          <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="p-3 rounded-lg text-sm" style="background:rgba(251,124,104,0.08);border:1px solid rgba(251,124,104,0.3);color:var(--color-error);">
+              {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label for="{{ form.nome.id_for_label }}" class="block text-sm font-medium mb-1.5" style="color:var(--color-text-secondary);font-family:'Geist',sans-serif;">{{ form.nome.label }}</label>
+                {{ form.nome }}
+                {% if form.nome.errors %}<p class="mt-1 text-xs" style="color:var(--color-error);">{{ form.nome.errors.0 }}</p>{% endif %}
+              </div>
+              <div>
+                <label for="{{ form.slug.id_for_label }}" class="block text-sm font-medium mb-1.5" style="color:var(--color-text-secondary);font-family:'Geist',sans-serif;">{{ form.slug.label }}</label>
+                {{ form.slug }}
+                {% if form.slug.errors %}<p class="mt-1 text-xs" style="color:var(--color-error);">{{ form.slug.errors.0 }}</p>{% endif %}
+                {% if form.slug.help_text %}<p class="mt-1 text-xs" style="color:var(--color-text-muted);">{{ form.slug.help_text }}</p>{% endif %}
+              </div>
+            </div>
+
+            {% if is_create %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label for="{{ form.usuario_nome.id_for_label }}" class="block text-sm font-medium mb-1.5" style="color:var(--color-text-secondary);font-family:'Geist',sans-serif;">{{ form.usuario_nome.label }}</label>
+                {{ form.usuario_nome }}
+                {% if form.usuario_nome.errors %}<p class="mt-1 text-xs" style="color:var(--color-error);">{{ form.usuario_nome.errors.0 }}</p>{% endif %}
+              </div>
+              <div>
+                <label for="{{ form.usuario_email.id_for_label }}" class="block text-sm font-medium mb-1.5" style="color:var(--color-text-secondary);font-family:'Geist',sans-serif;">{{ form.usuario_email.label }}</label>
+                {{ form.usuario_email }}
+                {% if form.usuario_email.errors %}<p class="mt-1 text-xs" style="color:var(--color-error);">{{ form.usuario_email.errors.0 }}</p>{% endif %}
+              </div>
+            </div>
+            {% endif %}
+
+            <div>
+              <label for="{{ form.logo.id_for_label }}" class="block text-sm font-medium mb-1.5" style="color:var(--color-text-secondary);font-family:'Geist',sans-serif;">{{ form.logo.label }}</label>
+              <div class="flex items-center gap-4">
+                {{ form.logo }}
+                {% if form.instance.logo %}
+                <img src="{{ form.instance.logo.url }}" alt="Logo" class="h-10 rounded">
+                {% endif %}
+              </div>
+              {% if form.logo.errors %}<p class="mt-1 text-xs" style="color:var(--color-error);">{{ form.logo.errors.0 }}</p>{% endif %}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label for="{{ form.cor_primaria.id_for_label }}" class="block text-sm font-medium mb-1.5" style="color:var(--color-text-secondary);font-family:'Geist',sans-serif;">{{ form.cor_primaria.label }}</label>
+                {{ form.cor_primaria }}
+                {% if form.cor_primaria.errors %}<p class="mt-1 text-xs" style="color:var(--color-error);">{{ form.cor_primaria.errors.0 }}</p>{% endif %}
+              </div>
+              <div>
+                <label for="{{ form.cor_secundaria.id_for_label }}" class="block text-sm font-medium mb-1.5" style="color:var(--color-text-secondary);font-family:'Geist',sans-serif;">{{ form.cor_secundaria.label }}</label>
+                {{ form.cor_secundaria }}
+                {% if form.cor_secundaria.errors %}<p class="mt-1 text-xs" style="color:var(--color-error);">{{ form.cor_secundaria.errors.0 }}</p>{% endif %}
+              </div>
+              <div>
+                <label for="{{ form.data_expiracao.id_for_label }}" class="block text-sm font-medium mb-1.5" style="color:var(--color-text-secondary);font-family:'Geist',sans-serif;">{{ form.data_expiracao.label }}</label>
+                {{ form.data_expiracao }}
+                {% if form.data_expiracao.errors %}<p class="mt-1 text-xs" style="color:var(--color-error);">{{ form.data_expiracao.errors.0 }}</p>{% endif %}
+              </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-4 pt-4 border-t" style="border-color:var(--color-border);">
+              <a href="{% url 'tenant_list' %}" class="px-5 py-2.5 rounded-lg text-sm font-medium transition-all" style="border:1px solid var(--color-border);color:var(--color-text-secondary);font-family:'Geist',sans-serif;">Cancelar</a>
+              <button type="submit" class="px-5 py-2.5 rounded-lg text-sm font-medium transition-all" style="background:var(--color-accent);color:#000;font-family:'Geist',sans-serif;letter-spacing:-0.025em;box-shadow:0 0 20px rgba(198,249,31,0.2);">
+                {% if is_create %}Criar Tenant{% else %}Salvar Alterações{% endif %}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView as AuthLoginView
@@ -14,8 +15,12 @@ class LoginView(AuthLoginView):
 
     def form_valid(self, form):
         user = form.get_user()
+        profile = user.profile
+        if profile.tenant and (not profile.tenant.ativo or profile.tenant.is_expired()):
+            form.add_error(None, 'Seu acesso expirou ou foi desativado. Entre em contato com o administrador.')
+            return self.form_invalid(form)
         login(self.request, user)
-        if hasattr(user, 'profile') and user.profile.must_change_password:
+        if profile.must_change_password:
             return redirect('first_access')
         return redirect(self.get_success_url())
 

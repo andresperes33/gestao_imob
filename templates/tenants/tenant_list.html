@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Tenants — Gestão Imob{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex flex-col">
+  <header class="border-b" style="border-color:var(--color-border);background:var(--color-bg-secondary);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m12 3 9 4.5-9 4.5-9-4.5L12 3Z"/><path d="m3 12 9 4.5 9-4.5"/><path d="m3 16.5 9 4.5 9-4.5"/>
+          </svg>
+          <span class="text-lg font-light tracking-tight" style="font-family:'Geist',sans-serif;letter-spacing:-0.05em;">Gestão Imob</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <a href="{% url 'dashboard' %}" class="text-sm px-4 py-1.5 rounded-lg transition-all" style="border:1px solid var(--color-border);color:var(--color-text-secondary);font-family:'Geist',sans-serif;">Dashboard</a>
+          <a href="{% url 'tenant_create' %}" class="text-sm px-4 py-1.5 rounded-lg transition-all" style="background:var(--color-accent);color:#000;font-family:'Geist',sans-serif;font-weight:500;">+ Novo Tenant</a>
+          <span class="text-sm" style="color:var(--color-text-secondary);">{{ request.user.get_full_name|default:request.user.username }}</span>
+          <a href="{% url 'logout' %}" class="text-sm px-4 py-1.5 rounded-lg transition-all" style="border:1px solid var(--color-border);color:var(--color-text-secondary);font-family:'Geist',sans-serif;">Sair</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="animate-blur-in">
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h1 class="text-3xl font-light tracking-tight mb-1" style="font-family:'Geist',sans-serif;letter-spacing:-0.05em;">Tenants</h1>
+            <p class="text-sm" style="color:var(--color-text-secondary);">Gerencie todos os corretores e imobiliárias cadastrados.</p>
+          </div>
+          <a href="{% url 'tenant_create' %}" class="px-5 py-2.5 rounded-lg text-sm font-medium transition-all" style="background:var(--color-accent);color:#000;font-family:'Geist',sans-serif;letter-spacing:-0.025em;box-shadow:0 0 20px rgba(198,249,31,0.2);">+ Novo Tenant</a>
+        </div>
+
+        {% if messages %}
+        <div class="mb-8 space-y-2">
+          {% for message in messages %}
+          <div class="p-3 rounded-lg text-sm border" style="background:{% if message.tags == 'success' %}rgba(85,225,84,0.08){% elif message.tags == 'warning' %}rgba(251,124,104,0.08){% else %}rgba(255,255,255,0.03){% endif %};border-color:{% if message.tags == 'success' %}rgba(85,225,84,0.3){% elif message.tags == 'warning' %}rgba(251,124,104,0.3){% else %}var(--color-border){% endif %};color:{% if message.tags == 'success' %}var(--color-success){% elif message.tags == 'warning' %}var(--color-error){% else %}var(--color-text-primary){% endif %};">
+            {{ message }}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if tenants %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {% for tenant in tenants %}
+          <a href="{% url 'tenant_detail' slug=tenant.slug %}" class="block rounded-xl p-6 border transition-all duration-200" style="background:var(--color-bg-card);border-color:var(--color-border);">
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <div class="text-lg font-light tracking-tight mb-1" style="font-family:'Geist',sans-serif;letter-spacing:-0.025em;">{{ tenant.nome }}</div>
+                <div class="text-xs" style="color:var(--color-text-muted);">/{{ tenant.slug }}/</div>
+              </div>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold" style="font-family:'Geist',sans-serif;{% if tenant.ativo and not tenant.is_expired %}background:rgba(85,225,84,0.1);border:1px solid rgba(85,225,84,0.3);color:var(--color-success);{% elif not tenant.ativo %}background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--color-text-muted);{% else %}background:rgba(251,124,104,0.1);border:1px solid rgba(251,124,104,0.3);color:var(--color-error);{% endif %}">
+                {{ tenant.ativo|yesno:"Ativo,Inativo" }}{% if tenant.is_expired %} (Expirado){% endif %}
+              </span>
+            </div>
+            <div class="text-xs" style="color:var(--color-text-muted);">
+              Cadastrado em {{ tenant.data_cadastro|date:"d/m/Y" }}
+              {% if tenant.data_expiracao %} &middot; Expira {{ tenant.data_expiracao|date:"d/m/Y" }}{% endif %}
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="rounded-xl p-12 border text-center" style="background:var(--color-bg-card);border-color:var(--color-border);">
+          <p class="mb-4" style="color:var(--color-text-muted);">Nenhum tenant cadastrado ainda.</p>
+          <a href="{% url 'tenant_create' %}" class="px-5 py-2.5 rounded-lg text-sm font-medium inline-block transition-all" style="background:var(--color-accent);color:#000;font-family:'Geist',sans-serif;letter-spacing:-0.025em;box-shadow:0 0 20px rgba(198,249,31,0.2);">Criar primeiro tenant</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

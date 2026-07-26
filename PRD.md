@@ -437,17 +437,17 @@ Encerrar Locação
 
 ### Sprint 3 — Multitenant e App Tenants
 
-- [ ] Criar `apps/tenants/models.py` (model `Tenant` completo)
-- [ ] Adicionar `tenant` ForeignKey no `User` (ou criar perfil)
-- [ ] Criar middleware `TenantMiddleware` que identifica tenant do usuário logado
-- [ ] Criar `apps/tenants/views.py` (CRUD de tenants — apenas super admin)
-- [ ] Criar `apps/tenants/forms.py` (TenantForm com geração de senha automática)
-- [ ] Criar `apps/tenants/urls.py`
-- [ ] Criar templates: `tenant_list.html`, `tenant_form.html`, `tenant_detail.html`
-- [ ] Implementar geração de senha aleatória + exibição única via mensagem flash
-- [ ] Implementar controle de expiração (bloquear login se expirado)
-- [ ] Implementar ativar/desativar tenant
-- [ ] Testar isolamento: usuário de um tenant não vê dados de outro
+- [x] Criar `apps/tenants/models.py` (model `Tenant`: nome, slug, logo, cores, ativo, expiração, created_by)
+- [x] Adicionar `tenant` ForeignKey no `UserProfile` (nullable, SET_NULL on delete)
+- [x] Criar middleware `TenantMiddleware` que identifica tenant, bloqueia se expirado/inativo
+- [x] Criar `apps/tenants/views.py` (CRUD: list, create, update, detail, toggle — apenas super admin)
+- [x] Criar `apps/tenants/forms.py` (TenantForm com geração de senha automática + validação slug único)
+- [x] Criar `apps/tenants/urls.py`
+- [x] Criar templates: `tenant_list.html` (cards com status), `tenant_form.html` (com campos cor, logo, expiração), `tenant_detail.html` (info + usuários)
+- [x] Implementar geração de senha aleatória via `secrets.token_urlsafe(12)` + mensagem flash (única exibição)
+- [x] Implementar controle de expiração: login bloqueado se tenant inativo ou expirado (em `LoginView.form_valid`)
+- [x] Implementar ativar/desativar tenant via POST toggle
+- [x] Testar isolamento e fluxo completo (21/21 testes)
 
 ### Sprint 4 — App Imóveis (CRUD + Fotos)
 

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ tenant.nome }} — Gestão Imob{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex flex-col">
+  <header class="border-b" style="border-color:var(--color-border);background:var(--color-bg-secondary);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m12 3 9 4.5-9 4.5-9-4.5L12 3Z"/><path d="m3 12 9 4.5 9-4.5"/><path d="m3 16.5 9 4.5 9-4.5"/>
+          </svg>
+          <span class="text-lg font-light tracking-tight" style="font-family:'Geist',sans-serif;letter-spacing:-0.05em;">Gestão Imob</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <a href="{% url 'tenant_list' %}" class="text-sm px-4 py-1.5 rounded-lg transition-all" style="border:1px solid var(--color-border);color:var(--color-text-secondary);font-family:'Geist',sans-serif;">Tenants</a>
+          <span class="text-sm" style="color:var(--color-text-secondary);">{{ request.user.get_full_name|default:request.user.username }}</span>
+          <a href="{% url 'logout' %}" class="text-sm px-4 py-1.5 rounded-lg transition-all" style="border:1px solid var(--color-border);color:var(--color-text-secondary);font-family:'Geist',sans-serif;">Sair</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="animate-blur-in">
+        {% if messages %}
+        <div class="mb-8 space-y-2">
+          {% for message in messages %}
+          <div class="p-3 rounded-lg text-sm border" style="background:{% if message.tags == 'success' %}rgba(85,225,84,0.08){% elif message.tags == 'warning' %}rgba(251,124,104,0.08){% else %}rgba(255,255,255,0.03){% endif %};border-color:{% if message.tags == 'success' %}rgba(85,225,84,0.3){% elif message.tags == 'warning' %}rgba(251,124,104,0.3){% else %}var(--color-border){% endif %};color:{% if message.tags == 'success' %}var(--color-success){% elif message.tags == 'warning' %}var(--color-error){% else %}var(--color-text-primary){% endif %};white-space:pre-wrap;">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="flex items-start justify-between mb-8">
+          <div>
+            <h1 class="text-3xl font-light tracking-tight mb-1" style="font-family:'Geist',sans-serif;letter-spacing:-0.05em;">{{ tenant.nome }}</h1>
+            <p class="text-sm" style="color:var(--color-text-secondary);">/{{ tenant.slug }}/</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <a href="{% url 'tenant_update' slug=tenant.slug %}" class="px-4 py-2 rounded-lg text-sm font-medium transition-all" style="border:1px solid var(--color-border);color:var(--color-text-secondary);font-family:'Geist',sans-serif;">Editar</a>
+            <form method="post" action="{% url 'tenant_toggle' slug=tenant.slug %}">
+              {% csrf_token %}
+              <button type="submit" class="px-4 py-2 rounded-lg text-sm font-medium transition-all" style="background:{% if tenant.ativo %}rgba(251,124,104,0.1);border:1px solid rgba(251,124,104,0.3);color:var(--color-error);{% else %}rgba(85,225,84,0.1);border:1px solid rgba(85,225,84,0.3);color:var(--color-success);{% endif %};font-family:'Geist',sans-serif;">
+                {% if tenant.ativo %}Desativar{% else %}Ativar{% endif %}
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div class="rounded-xl p-6 border" style="background:var(--color-bg-card);border-color:var(--color-border);">
+            <div class="text-xs mb-3" style="color:var(--color-text-muted);font-family:'Geist',sans-serif;text-transform:uppercase;letter-spacing:0.1em;">Informações</div>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-sm" style="color:var(--color-text-secondary);">Status</span>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold" style="font-family:'Geist',sans-serif;{% if tenant.ativo and not tenant.is_expired %}background:rgba(85,225,84,0.1);border:1px solid rgba(85,225,84,0.3);color:var(--color-success);{% elif not tenant.ativo %}background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--color-text-muted);{% else %}background:rgba(251,124,104,0.1);border:1px solid rgba(251,124,104,0.3);color:var(--color-error);{% endif %}">
+                  {{ tenant.ativo|yesno:"Ativo,Inativo" }}{% if tenant.is_expired %} (Expirado){% endif %}
+                </span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-sm" style="color:var(--color-text-secondary);">Cadastro</span>
+                <span class="text-sm" style="color:var(--color-text-primary);">{{ tenant.data_cadastro|date:"d/m/Y H:i" }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-sm" style="color:var(--color-text-secondary);">Expiração</span>
+                <span class="text-sm" style="color:var(--color-text-primary);">{{ tenant.data_expiracao|date:"d/m/Y"|default:"Sem expiração" }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-sm" style="color:var(--color-text-secondary);">Criado por</span>
+                <span class="text-sm" style="color:var(--color-text-primary);">{% if tenant.created_by %}{{ tenant.created_by.get_full_name|default:tenant.created_by.username }}{% else %}—{% endif %}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-xl p-6 border" style="background:var(--color-bg-card);border-color:var(--color-border);">
+            <div class="text-xs mb-3" style="color:var(--color-text-muted);font-family:'Geist',sans-serif;text-transform:uppercase;letter-spacing:0.1em;">Personalização</div>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-sm" style="color:var(--color-text-secondary);">Logo</span>
+                {% if tenant.logo %}
+                <img src="{{ tenant.logo.url }}" alt="Logo" class="h-8 rounded">
+                {% else %}
+                <span class="text-sm" style="color:var(--color-text-muted);">—</span>
+                {% endif %}
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm" style="color:var(--color-text-secondary);">Cor primária</span>
+                <div class="flex items-center gap-2">
+                  <span class="w-5 h-5 rounded-full border" style="background:{{ tenant.cor_primaria }};border-color:rgba(255,255,255,0.1);"></span>
+                  <span class="text-sm" style="color:var(--color-text-muted);font-family:monospace;">{{ tenant.cor_primaria }}</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm" style="color:var(--color-text-secondary);">Cor secundária</span>
+                <div class="flex items-center gap-2">
+                  <span class="w-5 h-5 rounded-full border" style="background:{{ tenant.cor_secundaria }};border-color:rgba(255,255,255,0.1);"></span>
+                  <span class="text-sm" style="color:var(--color-text-muted);font-family:monospace;">{{ tenant.cor_secundaria }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-xl p-6 border" style="background:var(--color-bg-card);border-color:var(--color-border);">
+          <div class="text-xs mb-4" style="color:var(--color-text-muted);font-family:'Geist',sans-serif;text-transform:uppercase;letter-spacing:0.1em;">Usuários vinculados</div>
+          {% if users %}
+          <div class="space-y-3">
+            {% for up in users %}
+            <div class="flex items-center justify-between py-2 px-3 rounded-lg" style="background:rgba(255,255,255,0.02);">
+              <div>
+                <div class="text-sm" style="color:var(--color-text-primary);">{{ up.user.get_full_name|default:up.user.username }}</div>
+                <div class="text-xs" style="color:var(--color-text-muted);">{{ up.user.email }}</div>
+              </div>
+              <div class="flex items-center gap-2">
+                {% if up.must_change_password %}
+                <span class="text-xs px-2 py-0.5 rounded" style="background:rgba(251,124,104,0.1);color:var(--color-error);">Troca pendente</span>
+                {% endif %}
+                <span class="text-xs" style="color:var(--color-text-muted);">@{{ up.user.username }}</span>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p style="color:var(--color-text-muted);font-size:0.875rem;">Nenhum usuário vinculado a este tenant.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}
