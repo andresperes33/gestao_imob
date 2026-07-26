@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design System — Gestão Imob (Lumion Reference)</title>
+  <meta name="description" content="Design system reference based on Lumimotion UI pattern library.">
+
+  <!-- Google Fonts: Inter + Geist -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .font-geist { font-family: 'Geist', sans-serif !important; }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS (CDN JIT) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Iconify Web Component Runtime -->
+  <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+
+  <style>
+    /* ============================================================
+       LUMION DESIGN SYSTEM — Custom Utilities
+       Extracted from the Lumimotion reference application
+       ============================================================ */
+
+    /* ---------- Base ---------- */
+    html.dark {
+      font-family: 'Inter', system-ui, sans-serif;
+      color-scheme: dark;
+    }
+    body {
+      background-color: #05080A;
+      color: #ffffff;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---------- Typography Utilities ---------- */
+    .text-balance { text-wrap: balance; }
+    .text-pretty  { text-wrap: pretty; }
+
+    /* ---------- Flashlight Effects ---------- */
+    .flashlight-target {
+      position: relative;
+      overflow: hidden;
+    }
+    .flashlight-target::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      background: radial-gradient(
+        600px circle at var(--mouse-x, 0) var(--mouse-y, 0),
+        rgba(198, 249, 31, 0.15),
+        transparent 40%
+      );
+      border-radius: inherit;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+    .flashlight-target::after {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      background: radial-gradient(
+        800px circle at var(--mouse-x, 0) var(--mouse-y, 0),
+        rgba(255, 255, 255, 0.02),
+        transparent 40%
+      );
+      border-radius: inherit;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+    .flashlight-content {
+      position: relative;
+      z-index: 2;
+      background-color: transparent;
+      height: 100%;
+      width: 100%;
+      border-radius: inherit;
+    }
+    .flashlight-target:hover::before,
+    .flashlight-target:hover::after {
+      opacity: 1;
+    }
+
+    /* ---------- GSAP Word Reveal ---------- */
+    .gsap-reveal-wrapper {
+      overflow: visible;
+    }
+    .gsap-word-reveal {
+      will-change: transform, filter, opacity;
+    }
+
+    /* ---------- Char Slide Down ---------- */
+    .char-clip-wrap {
+      display: inline-block;
+      overflow: hidden;
+    }
+    .char-slide-down {
+      display: inline-block;
+      animation: charSlideDown 0.5s ease-out forwards;
+      opacity: 0;
+      transform: translateY(-100%);
+    }
+    @keyframes charSlideDown {
+      0%   { opacity: 0; transform: translateY(-100%); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- Entry Animations ---------- */
+    .scroll-fade-in { /* base class, triggered by JS */ }
+
+    @keyframes blurFadeIn {
+      0%   { opacity: 0; filter: blur(12px); transform: translateY(40px); }
+      100% { opacity: 1; filter: blur(0); transform: translateY(0); }
+    }
+    @keyframes simpleFadeIn {
+      0%   { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    @keyframes slideIn {
+      0%   { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-blur-in {
+      animation: blurFadeIn 0.8s ease-out forwards;
+    }
+    .animate-fade-in {
+      animation: simpleFadeIn 0.6s ease-out forwards;
+    }
+    .animate-slide-in {
+      animation: slideIn 0.6s ease-out forwards;
+    }
+
+    /* ---------- Stagger Delays ---------- */
+    .stagger-1 { animation-delay: 0.1s; }
+    .stagger-2 { animation-delay: 0.2s; }
+    .stagger-3 { animation-delay: 0.3s; }
+    .stagger-4 { animation-delay: 0.4s; }
+    .stagger-5 { animation-delay: 0.5s; }
+    .stagger-6 { animation-delay: 0.6s; }
+    .stagger-7 { animation-delay: 0.7s; }
+
+    /* ---------- Hide Scrollbar ---------- */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* ---------- Design System Nav ---------- */
+    .ds-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(5, 8, 10, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0 1.5rem;
+    }
+    .ds-nav-inner {
+      max-width: 1360px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      height: 56px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .ds-nav-inner::-webkit-scrollbar { display: none; }
+    .ds-nav a {
+      color: rgba(255, 255, 255, 0.55);
+      font-family: 'Geist', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.025em;
+      text-decoration: none;
+      white-space: nowrap;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .ds-nav a:hover,
+    .ds-nav a.active {
+      color: #ffffff;
+      border-bottom-color: #c6f91f;
+    }
+
+    .ds-content {
+      max-width: 1360px;
+      margin: 80px auto 0;
+      padding: 2rem 1.5rem 6rem;
+    }
+
+    /* ---------- Section Headers ---------- */
+    .ds-section {
+      margin-bottom: 4rem;
+      scroll-margin-top: 80px;
+    }
+    .ds-section h2 {
+      font-family: 'Geist', sans-serif;
+      font-weight: 300;
+      font-size: 2.25rem;
+      letter-spacing: -0.05em;
+      color: #ffffff;
+      margin-bottom: 2rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .ds-section h3 {
+      font-family: 'Geist', sans-serif;
+      font-weight: 400;
+      font-size: 1.25rem;
+      letter-spacing: -0.025em;
+      color: rgba(255, 255, 255, 0.85);
+      margin: 1.5rem 0 1rem;
+    }
+    .ds-section h4 {
+      font-family: 'Geist', sans-serif;
+      font-weight: 500;
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.6);
+      margin: 1rem 0 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* ---------- Spec Table ---------- */
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Geist', sans-serif;
+    }
+    .spec-table th,
+    .spec-table td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .spec-table th {
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .spec-table td {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.875rem;
+    }
+    .spec-table td:first-child {
+      color: #ffffff;
+      font-weight: 500;
+    }
+    .spec-table td:last-child {
+      text-align: right;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.75rem;
+      font-family: monospace;
+    }
+
+    /* ---------- Color Swatch ---------- */
+    .color-swatch {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.375rem;
+      background: rgba(255, 255, 255, 0.03);
+      font-family: 'Geist', sans-serif;
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    .color-swatch-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      flex-shrink: 0;
+    }
+
+    /* ---------- Component Showcase ---------- */
+    .component-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .component-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      margin: 1rem 0;
+    }
+    .component-label {
+      font-family: 'Geist', sans-serif;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 0.25rem;
+    }
+
+    /* ---------- Divider ---------- */
+    .ds-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.06);
+      margin: 2rem 0;
+    }
+
+    /* ---------- Badge ---------- */
+    .ds-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-family: 'Geist', sans-serif;
+      font-size: 0.625rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ---------- Grid for swatches ---------- */
+    .swatch-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+
+    /* ---------- Shell preview ---------- */
+    .shell-preview {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      overflow: hidden;
+      background: #05080A;
+      min-height: 400px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================ -->
+  <!-- NAVEGAÇÃO FIXA DO DESIGN SYSTEM                              -->
+  <!-- ============================================================ -->
+  <nav class="ds-nav">
+    <div class="ds-nav-inner">
+      <a href="#shell" class="active">Application Shell</a>
+      <a href="#tipografia">Tipografia</a>
+      <a href="#cores">Cores e Superfícies</a>
+      <a href="#navegacao">Navegação</a>
+      <a href="#formularios">Formulários</a>
+      <a href="#tabelas">Tabelas e Dados</a>
+      <a href="#componentes">Componentes de UI</a>
+      <a href="#layout">Layout e Espaçamento</a>
+      <a href="#motion">Motion e Interação</a>
+      <a href="#icones">Ícones</a>
+    </div>
+  </nav>
+
+  <!-- ============================================================ -->
+  <!-- CONTEÚDO PRINCIPAL                                           -->
+  <!-- ============================================================ -->
+  <div class="ds-content">
+
+    <!-- ========================================================== -->
+    <!-- SECTION 0: APPLICATION SHELL                               -->
+    <!-- ========================================================== -->
+    <section id="shell" class="ds-section">
+      <h2>Application Shell</h2>
+      <p style="font-family:'Geist',sans-serif;color:rgba(255,255,255,0.5);font-size:0.875rem;margin-bottom:1.5rem;">
+        Clone exato do layout principal da aplicação Lumimotion. Navegação fixa, grid centralizado com largura máxima de 1360px, tema escuro.
+      </p>
+
+      <div class="shell-preview">
+        <!-- Navbar -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 2rem;border-bottom:1px solid rgba(255,255,255,0.1);background:rgba(5,8,10,0.9);backdrop-filter:blur(12px);">
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c6f91f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m12 3 9 4.5-9 4.5-9-4.5L12 3Z"/><path d="m3 12 9 4.5 9-4.5"/><path d="m3 16.5 9 4.5 9-4.5"/>
+            </svg>
+            <span style="font-family:'Geist',sans-serif;font-weight:500;font-size:1.25rem;letter-spacing:-0.025em;color:#ffffff;">Lumimotion</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:2rem;">
+            <a href="#" style="color:rgba(255,255,255,0.55);font-family:'Geist',sans-serif;font-size:0.875rem;text-decoration:none;transition:color 0.2s;">Features</a>
+            <a href="#" style="color:rgba(255,255,255,0.55);font-family:'Geist',sans-serif;font-size:0.875rem;text-decoration:none;transition:color 0.2s;">Pricing</a>
+            <a href="#" style="color:rgba(255,255,255,0.55);font-family:'Geist',sans-serif;font-size:0.875rem;text-decoration:none;transition:color 0.2s;">Templates</a>
+            <a href="#" style="color:rgba(255,255,255,0.55);font-family:'Geist',sans-serif;font-size:0.875rem;text-decoration:none;transition:color 0.2s;">Resources</a>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <a href="#" style="color:rgba(255,255,255,0.7);font-family:'Geist',sans-serif;font-size:0.875rem;text-decoration:none;padding:0.5rem 1rem;border-radius:0.375rem;transition:background 0.2s;">Sign In</a>
+            <a href="#" style="background:#c6f91f;color:#000000;font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:500;letter-spacing:-0.025em;text-decoration:none;padding:0.5rem 1.25rem;border-radius:0.375rem;box-shadow:0 0 20px rgba(198,249,31,0.2);transition:background 0.2s;">Get Started</a>
+          </div>
+        </div>
+
+        <!-- Hero area -->
+        <div style="padding:4rem 2rem;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);">
+          <div style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.375rem 1rem;border:1px solid rgba(198,249,31,0.3);background:rgba(198,249,31,0.05);border-radius:9999px;margin-bottom:1.5rem;">
+            <span style="width:6px;height:6px;border-radius:9999px;background:#c6f91f;box-shadow:0 0 10px #c6f91f;"></span>
+            <span style="font-family:'Geist',sans-serif;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.2em;color:#c6f91f;">Premium Prompt Library</span>
+          </div>
+          <h1 style="font-family:'Geist',sans-serif;font-weight:300;font-size:4.5rem;letter-spacing:-0.05em;color:#ffffff;margin-bottom:1rem;line-height:1.1;">
+            Lumimotion
+          </h1>
+          <p style="font-family:'Geist',sans-serif;font-size:1.125rem;color:rgba(255,255,255,0.5);max-width:36rem;margin:0 auto 2rem;line-height:1.625;">
+            Premium, editorial, system-driven prompt templates for designers and developers who want cleaner results from the first generation.
+          </p>
+          <div style="display:flex;align-items:center;justify-content:center;gap:0.75rem;">
+            <a href="#" style="background:#c6f91f;color:#000000;font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:500;letter-spacing:-0.025em;text-decoration:none;padding:0.75rem 2rem;border-radius:0.375rem;box-shadow:0 0 36px rgba(198,249,31,0.42);display:inline-flex;align-items:center;gap:0.75rem;transition:background 0.2s;">
+              Explore Free Prompts
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+            <a href="#" style="border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.035);color:rgba(255,255,255,0.8);font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:500;letter-spacing:-0.025em;text-decoration:none;padding:0.75rem 2rem;border-radius:0.375rem;transition:background 0.2s;">Unlock All</a>
+          </div>
+        </div>
+
+        <!-- Content Area -->
+        <div style="padding:2rem;">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
+            <div style="border:1px solid rgba(255,255,255,0.1);border-radius:0.75rem;background:rgba(255,255,255,0.03);padding:1.5rem;backdrop-filter:blur(12px);">
+              <div style="font-family:'Geist',sans-serif;font-weight:300;font-size:1.25rem;letter-spacing:-0.025em;color:#ffffff;margin-bottom:0.5rem;">Dashboard UI</div>
+              <div style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.5);line-height:1.625;">Production-ready metrics and analytics views.</div>
+            </div>
+            <div style="border:1px solid rgba(255,255,255,0.1);border-radius:0.75rem;background:rgba(255,255,255,0.03);padding:1.5rem;backdrop-filter:blur(12px);">
+              <div style="font-family:'Geist',sans-serif;font-weight:300;font-size:1.25rem;letter-spacing:-0.025em;color:#ffffff;margin-bottom:0.5rem;">Mobile App</div>
+              <div style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.5);line-height:1.625;">Native-quality mobile app interface patterns.</div>
+            </div>
+            <div style="border:1px solid rgba(255,255,255,0.1);border-radius:0.75rem;background:rgba(255,255,255,0.03);padding:1.5rem;backdrop-filter:blur(12px);">
+              <div style="font-family:'Geist',sans-serif;font-weight:300;font-size:1.25rem;letter-spacing:-0.025em;color:#ffffff;margin-bottom:0.5rem;">Design System</div>
+              <div style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.5);line-height:1.625;">Component architecture and token structures.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================== -->
+    <!-- SECTION 1: TIPOGRAFIA                                      -->
+    <!-- ========================================================== -->
+    <section id="tipografia" class="ds-section">
+      <h2>Tipografia</h2>
+      <p style="font-family:'Geist',sans-serif;color:rgba(255,255,255,0.5);font-size:0.875rem;margin-bottom:1.5rem;">
+        Fontes primárias da aplicação: <strong style="color:#ffffff;">Geist</strong> (títulos, labels, botões) e <strong style="color:#ffffff;">Inter</strong> (fallback do sistema).
+      </p>
+
+      <h3>Font Families</h3>
+      <div class="swatch-grid">
+        <div class="color-swatch">
+          <span style="font-family:'Geist',sans-serif;font-weight:400;">Geist</span>
+          <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">Primária — títulos, botões, labels</span>
+        </div>
+        <div class="color-swatch">
+          <span style="font-family:'Inter',sans-serif;font-weight:400;">Inter</span>
+          <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">Fallback — corpo de texto</span>
+        </div>
+      </div>
+
+      <div class="ds-divider"></div>
+      <h3>Escalas Tipográficas</h3>
+
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Nome do Estilo</th>
+            <th>Preview</th>
+            <th>Especificação</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Hero Title</td>
+            <td><span style="font-family:'Geist',sans-serif;font-weight:300;font-size:4.5rem;line-height:1;letter-spacing:-0.05em;color:#fff;">Lumimotion</span></td>
+            <td>72px / 1 · Geist Light · -0.05em</td>
+          </tr>
+          <tr>
+            <td>Page Title</td>
+            <td><span style="font-family:'Geist',sans-serif;font-weight:300;font-size:3.75rem;line-height:1;letter-spacing:-0.05em;color:#fff;">Build better</span></td>
+            <td>60px / 1 · Geist Light · -0.05em</td>
+          </tr>
+          <tr>
+            <td>Section Heading</td>
+            <td><span style="font-family:'Geist',sans-serif;font-weight:300;font-size:2.25rem;line-height:2.5rem;letter-spacing:-0.05em;color:#fff;">One time payment.</span></td>
+            <td>36px / 40px · Geist Light · -0.05em</td>
+          </tr>
+          <tr>
+            <td>Card Title</td>
+            <td><span style="font-family:'Geist',sans-serif;font-weight:300;font-size:1.5rem;line-height:2rem;letter-spacing:-0.025em;color:#fff;">Dashboard UI</span></td>
+            <td>24px / 32px · Geist Light · -0.025em</td>
+          </tr>
+          <tr>
+            <td>Subtitle</td>
+            <td><span style="font-family:'Geist',sans-serif;font-weight:400;font-size:1.25rem;line-height:1.75rem;letter-spacing:-0.025em;color:#fff;">Standard License</span></td>
+            <td>20px / 28px · Geist Regular · -0.025em</td>
+          </tr>
+          <tr>
+            <td>Body Text</td>
+            <td><span style="font-family:'Geist',sans-serif;font-weight:400;font-size:1rem;line-height:1.625;letter-spacing:-0.025em;color:rgba(255,255,255,0.8);">Premium prompt templates for designers.</span></td>
+            <td>16px / 26px · Geist Regular · -0.025em</td>
+          </tr>
+          <tr>
+            <td>Body Text Small</td>
+            <td><span style="font-family:'Geist',sans-serif;font-weight:400;font-size:0.875rem;line-height:1.25rem;letter-spacing:-0.025em;color:rgba(255,255,255,0.6);">Skip the subscription. Gain instant access.</span></td>
+            <td>14px / 20px · Geist Regular · -0.025em</td>
+          </tr>
+          <tr>
+            <td>Caption / Helper</td>
+            <td><span style="font-family:'Geist',sans-serif;font-weight:400;font-size:0.75rem;line-height:1rem;letter-spacing:-0.025em;color:rgba(255,255,255,0.4);">/ one-time</span></td>
+            <td>12px / 16px · Geist Regular · -0.025em</td>
+          </tr>
+          <tr>
+            <td>Label / Tag</td>
+            <td><span style="font-family:'Geist',sans-serif;font-weight:600;font-size:0.7rem;line-height:1;letter-spacing:0.2em;text-transform:uppercase;color:#c6f91f;">Unlock Access</span></td>
+            <td>11px / 1 · Geist Semibold · 0.2em · Uppercase</td>
+          </tr>
+          <tr>
+            <td>Overline / Badge</td>
+            <td><span style="font-family:'Geist',sans-serif;font-weight:600;font-size:0.625rem;line-height:1;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.5);">Most Popular</span></td>
+            <td>10px / 1 · Geist Semibold · 0.1em · Uppercase</td>
+          </tr>
+          <tr>
+            <td>Monospace (Valor)</td>
+            <td><span style="font-family:'Geist',sans-serif;font-weight:300;font-size:3rem;line-height:1;letter-spacing:-0.05em;color:#ffffff;">$29</span></td>
+            <td>48px / 1 · Geist Light · -0.05em · Preço</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ========================================================== -->
+    <!-- SECTION 2: CORES, SUPERFÍCIES E ESTADOS SEMÂNTICOS         -->
+    <!-- ========================================================== -->
+    <section id="cores" class="ds-section">
+      <h2>Cores, Superfícies e Estados Semânticos</h2>
+
+      <h3>2.1 — Cores de Interface</h3>
+      <div class="swatch-grid">
+        <div class="color-swatch">
+          <span class="color-swatch-circle" style="background:#05080A;"></span>
+          <span>Background Principal</span>
+          <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">#05080A</span>
+        </div>
+        <div class="color-swatch">
+          <span class="color-swatch-circle" style="background:#070A0D;"></span>
+          <span>Background CTA</span>
+          <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">#070A0D</span>
+        </div>
+        <div class="color-swatch">
+          <span class="color-swatch-circle" style="background:#080D10;"></span>
+          <span>Background Card</span>
+          <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">#080D10</span>
+        </div>
+        <div class="color-swatch">
+          <span class="color-swatch-circle" style="background:#0B0F12;"></span>
+          <span>Background Nav</span>
+          <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">#0B0F12</span>
+        </div>
+        <div class="color-swatch">
+          <span class="color-swatch-circle" style="background:rgba(255,255,255,0.03);"></span>
+          <span>Card Surface</span>
+          <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">white/3%</span>
+        </div>
+        <div class="color-swatch">
+          <span class="color-swatch-circle" style="background:rgba(255,255,255,0.05);"></span>
+          <span>Card Surface Hover</span>
+          <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">white/5%</span>
+        </div>
+        <div class="color-swatch">
+          <span class="color-swatch-circle" style="background:rgba(255,255,255,0.035);"></span>
+          <span>Button Ghost BG</span>
+          <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">white/3.5%</span>
+        </div>
+      </div>
+
+      <h3>2.2 — Cores Semânticas de Estado</h3>
+      <div class="swatch-grid">
+        <div class="color-swatch">
+          <span class="color-swatch-circle" style="background:#c6f91f;"></span>
+          <span style="color:#c6f91f;">Accent / Primary</span>
+          <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">#c6f91f</span>
+        </div>
+        <div class="color-swatch">
+          <span class="color-swatch-circle" style="background:#aade17;"></span>
+          <span>Accent Hover</span>
+          <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">#aade17</span>
+        </div>
+        <div class="color-swatch">
+          <span class="color-swatch-circle" style="background:#55e154;"></span>
+          <span style="color:#55e154;">Success</span>
+          <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">#55e154</span>
+        </div>
+        <div class="color-swatch">
+          <span class="color-swatch-circle" style="background:#fb7c68;"></span>
+          <span style="color:#fb7c68;">Error / Danger</span>
+          <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">#fb7c68</span>
+        </div>
+        <div class="color-swatch">
+          <span class="color-swatch-circle" style="background:rgba(255,255,255,0.1);"></span>
+          <span>Border Default</span>
+          <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">white/10%</span>
+        </div>
+        <div class="color-swatch">
+          <span class="color-swatch-circle" style="background:rgba(255,255,255,0.2);"></span>
+          <span>Border Hover</span>
+          <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">white/20%</span>
+        </div>
+      </div>
+
+      <h4>Badges de Status</h4>
+      <div class="component-row">
+        <span class="ds-badge" style="background:rgba(198,249,31,0.1);border:1px solid rgba(198,249,31,0.3);color:#c6f91f;">Disponível</span>
+        <span class="ds-badge" style="background:rgba(85,225,84,0.1);border:1px solid rgba(85,225,84,0.3);color:#55e154;">Ativo</span>
+        <span class="ds-badge" style="background:rgba(251,124,104,0.1);border:1px solid rgba(251,124,104,0.3);color:#fb7c68;">Atrasado</span>
+        <span class="ds-badge" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);">Inativo</span>
+      </div>
+
+      <div class="ds-divider"></div>
+      <h3>2.3 — Superfícies e Efeitos</h3>
+
+      <h4>Bordas e Divisores</h4>
+      <div class="component-row">
+        <div style="width:100px;height:1px;background:rgba(255,255,255,0.06);"></div>
+        <span style="font-family:'Geist',sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.4);">Divider — white/6% · 1px</span>
+      </div>
+      <div class="component-row">
+        <div style="width:200px;height:32px;border:1px solid rgba(255,255,255,0.1);border-radius:0.375rem;"></div>
+        <span style="font-family:'Geist',sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.4);">Card Border — white/10% · 1px · radius 6px</span>
+      </div>
+
+      <h4>Sombras</h4>
+      <div class="component-row">
+        <div style="width:80px;height:80px;border-radius:0.75rem;background:rgba(255,255,255,0.03);box-shadow:0 10px 40px -10px rgba(0,0,0,0.8);"></div>
+        <span style="font-family:'Geist',sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.4);">Card Shadow — 0 10px 40px -10px rgba(0,0,0,0.8)</span>
+      </div>
+      <div class="component-row">
+        <div style="width:80px;height:80px;border-radius:0.75rem;background:rgba(255,255,255,0.03);box-shadow:inset 0 1px 0 rgba(255,255,255,0.035), 0 18px 45px rgba(0,0,0,0.18);"></div>
+        <span style="font-family:'Geist',sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.4);">Card Elevated — inner highlight + drop shadow</span>
+      </div>
+      <div class="component-row">
+        <div style="width:80px;height:80px;border-radius:0.75rem;background:#c6f91f;box-shadow:0 0 20px rgba(198,249,31,0.2);"></div>
+        <span style="font-family:'Geist',sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.4);">Accent Glow — 0 0 20px rgba(198,249,31,0.2)</span>
+      </div>
+
+      <h4>Overlay e Backdrop</h4>
+      <div class="component-row">
+        <div style="width:200px;height:60px;border-radius:0.75rem;background:rgba(255,255,255,0.05);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;padding:0 1rem;">
+          <span style="font-family:'Geist',sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.6);">backdrop-blur-md (12px)</span>
+        </div>
+      </div>
+
+      <h4>Gradientes</h4>
+      <div class="component-row">
+        <div style="width:200px;height:40px;border-radius:0.375rem;background:radial-gradient(circle at 20% 0%, rgba(198,249,31,0.10), transparent 34%);"></div>
+        <span style="font-family:'Geist',sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.4);">Hero Glow — radial accent</span>
+      </div>
+      <div class="component-row">
+        <div style="width:200px;height:40px;border-radius:0.375rem;background:linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);background-size:36px 36px;"></div>
+        <span style="font-family:'Geist',sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.4);">Grid Pattern — 36px squares, white/1.8%</span>
+      </div>
+    </section>
+
+    <!-- ========================================================== -->
+    <!-- SECTION 3: NAVEGAÇÃO E ESTRUTURA                           -->
+    <!-- ========================================================== -->
+    <section id="navegacao" class="ds-section">
+      <h2>Navegação e Estrutura</h2>
+
+      <h3>3.1 — Navbar Principal</h3>
+      <p style="font-family:'Geist',sans-serif;color:rgba(255,255,255,0.5);font-size:0.875rem;margin-bottom:1rem;">
+        Navbar fixa no topo com backdrop-filter: blur(12px). Logo à esquerda, links centralizados, ações à direita.
+      </p>
+      <div style="border:1px solid rgba(255,255,255,0.1);border-radius:0.75rem;overflow:hidden;background:rgba(5,8,10,0.85);backdrop-filter:blur(12px);">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 2rem;">
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c6f91f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m12 3 9 4.5-9 4.5-9-4.5L12 3Z"/><path d="m3 12 9 4.5 9-4.5"/><path d="m3 16.5 9 4.5 9-4.5"/>
+            </svg>
+            <span style="font-family:'Geist',sans-serif;font-weight:500;font-size:1.125rem;letter-spacing:-0.025em;color:#ffffff;">Lumimotion</span>
+          </div>
+          <!-- Links: default / hover / active -->
+          <div style="display:flex;align-items:center;gap:1.5rem;">
+            <a href="#" style="color:#ffffff;font-family:'Geist',sans-serif;font-size:0.875rem;text-decoration:none;border-bottom:1px solid #c6f91f;padding-bottom:2px;">Features</a>
+            <a href="#" style="color:rgba(255,255,255,0.55);font-family:'Geist',sans-serif;font-size:0.875rem;text-decoration:none;transition:color 0.2s;">Pricing</a>
+            <a href="#" style="color:rgba(255,255,255,0.55);font-family:'Geist',sans-serif;font-size:0.875rem;text-decoration:none;transition:color 0.2s;">Templates</a>
+            <a href="#" style="color:rgba(255,255,255,0.55);font-family:'Geist',sans-serif;font-size:0.875rem;text-decoration:none;transition:color 0.2s;">Resources</a>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <a href="#" style="color:rgba(255,255,255,0.7);font-family:'Geist',sans-serif;font-size:0.875rem;text-decoration:none;padding:0.5rem 1rem;border-radius:0.375rem;transition:background 0.2s;">Sign In</a>
+            <a href="#" style="background:#c6f91f;color:#000;font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:500;letter-spacing:-0.025em;text-decoration:none;padding:0.5rem 1.25rem;border-radius:0.375rem;box-shadow:0 0 20px rgba(198,249,31,0.2);">Get Started</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="component-row" style="margin-top:1rem;">
+        <div style="display:flex;flex-direction:column;gap:0.25rem;">
+          <span class="component-label">Nav Link — Default</span>
+          <span style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.55);">Features</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.25rem;">
+          <span class="component-label">Nav Link — Hover</span>
+          <span style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.8);">Features</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.25rem;">
+          <span class="component-label">Nav Link — Active (current)</span>
+          <span style="font-family:'Geist',sans-serif;font-size:0.875rem;color:#ffffff;border-bottom:1px solid #c6f91f;">Features</span>
+        </div>
+      </div>
+
+      <div class="ds-divider"></div>
+      <h3>3.2 — Botões de Ação (Header)</h3>
+      <div class="component-row">
+        <div style="display:flex;flex-direction:column;gap:0.25rem;">
+          <span class="component-label">Primary CTA</span>
+          <a href="#" style="background:#c6f91f;color:#000;font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:500;letter-spacing:-0.025em;text-decoration:none;padding:0.5rem 1.25rem;border-radius:0.375rem;box-shadow:0 0 20px rgba(198,249,31,0.2);">Get Started</a>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.25rem;">
+          <span class="component-label">Ghost Button</span>
+          <a href="#" style="color:rgba(255,255,255,0.7);font-family:'Geist',sans-serif;font-size:0.875rem;text-decoration:none;padding:0.5rem 1rem;border-radius:0.375rem;">Sign In</a>
+        </div>
+      </div>
+
+      <div class="ds-divider"></div>
+      <h3>3.3 — Seções da Página</h3>
+      <p style="font-family:'Geist',sans-serif;color:rgba(255,255,255,0.5);font-size:0.875rem;margin-bottom:1rem;">
+        Cada seção ocupa largura total com padding vertical. Container interno com <code style="color:#c6f91f;">max-width: 1360px</code> centralizado.
+      </p>
+      <table class="spec-table">
+        <thead>
+          <tr><th>Seção</th><th>Padding Vertical</th><th>Borda Inferior</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Hero</td><td>py-32 (128px) / md:py-32</td><td>border-b border-white/10</td></tr>
+          <tr><td>Testimonials</td><td>py-24 (96px) / md:py-32</td><td>border-b border-white/10</td></tr>
+          <tr><td>Pricing</td><td>py-24 (96px) / md:py-32</td><td>border-b border-white/10</td></tr>
+          <tr><td>FAQ</td><td>py-24 (96px) / md:py-32</td><td>border-b border-white/10</td></tr>
+          <tr><td>CTA / Footer</td><td>pt-20 pb-10 / custom</td><td>nenhuma</td></tr>
+        </tbody>
+      </table>
+
+      <div class="ds-divider"></div>
+      <h3>3.4 — Footer</h3>
+      <div style="border:1px solid rgba(255,255,255,0.1);border-radius:0.75rem;padding:2rem;background:#070A0D;">
+        <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr;gap:2rem;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:2rem;margin-bottom:2rem;">
+          <div>
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c6f91f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m12 3 9 4.5-9 4.5-9-4.5L12 3Z"/><path d="m3 12 9 4.5 9-4.5"/><path d="m3 16.5 9 4.5 9-4.5"/>
+              </svg>
+              <span style="font-family:'Geist',sans-serif;font-size:1.25rem;font-weight:500;letter-spacing:-0.025em;color:#fff;">Lumimotion</span>
+            </div>
+            <p style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.5);line-height:1.625;">Premium, editorial, system-driven prompt templates.</p>
+          </div>
+          <div>
+            <h4 style="font-family:'Geist',sans-serif;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.5);margin-bottom:1rem;">Product</h4>
+            <div style="display:flex;flex-direction:column;gap:0.75rem;">
+              <a href="#" style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s;">Prompt Library</a>
+              <a href="#" style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s;">Pricing</a>
+              <a href="#" style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s;">How It Works</a>
+            </div>
+          </div>
+          <div>
+            <h4 style="font-family:'Geist',sans-serif;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.5);margin-bottom:1rem;">Company</h4>
+            <div style="display:flex;flex-direction:column;gap:0.75rem;">
+              <a href="#" style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s;">About</a>
+              <a href="#" style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s;">Blog</a>
+              <a href="#" style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s;">Contact</a>
+            </div>
+          </div>
+          <div>
+            <h4 style="font-family:'Geist',sans-serif;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.5);margin-bottom:1rem;">Legal</h4>
+            <div style="display:flex;flex-direction:column;gap:0.75rem;">
+              <a href="#" style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s;">Privacy</a>
+              <a href="#" style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s;">Terms</a>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.4);">&copy; 2026 Lumimotion. All rights reserved.</span>
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <a href="#" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.1);border-radius:0.375rem;color:rgba(255,255,255,0.45);transition:color 0.2s;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+            </a>
+            <a href="#" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.1);border-radius:0.375rem;color:rgba(255,255,255,0.45);transition:color 0.2s;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l16 16"/><path d="M20 4 4 20"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================== -->
+    <!-- SECTION 4: COMPONENTES DE FORMULÁRIO                       -->
+    <!-- ========================================================== -->
+    <section id="formularios" class="ds-section">
+      <h2>Componentes de Formulário</h2>
+      <p style="font-family:'Geist',sans-serif;color:rgba(255,255,255,0.5);font-size:0.875rem;margin-bottom:1.5rem;">
+        A aplicação de referência (landing page) não possui formulários densos. Os padrões abaixo foram extraídos dos elementos de input presentes (botões, links de ação, toggles de planos).
+      </p>
+
+      <h3>4.1 — Input de Texto (estilo consistente com a aplicação)</h3>
+      <div class="component-grid">
+        <div style="display:flex;flex-direction:column;gap:0.25rem;">
+          <span class="component-label">Default</span>
+          <input type="text" placeholder="seu@email.com" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:0.375rem;padding:0.625rem 0.875rem;color:#ffffff;font-family:'Geist',sans-serif;font-size:0.875rem;outline:none;width:220px;">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.25rem;">
+          <span class="component-label">Focus</span>
+          <input type="text" placeholder="seu@email.com" value="contato@exemplo.com" style="background:rgba(255,255,255,0.05);border:1px solid #c6f91f;border-radius:0.375rem;padding:0.625rem 0.875rem;color:#ffffff;font-family:'Geist',sans-serif;font-size:0.875rem;outline:none;box-shadow:0 0 12px rgba(198,249,31,0.14);width:220px;">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.25rem;">
+          <span class="component-label">Error</span>
+          <input type="text" placeholder="seu@email.com" value="invalido" style="background:rgba(251,124,104,0.05);border:1px solid rgba(251,124,104,0.4);border-radius:0.375rem;padding:0.625rem 0.875rem;color:#fb7c68;font-family:'Geist',sans-serif;font-size:0.875rem;outline:none;width:220px;">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.25rem;">
+          <span class="component-label">Disabled</span>
+          <input type="text" placeholder="seu@email.com" disabled style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:0.375rem;padding:0.625rem 0.875rem;color:rgba(255,255,255,0.25);font-family:'Geist',sans-serif;font-size:0.875rem;outline:none;cursor:not-allowed;width:220px;">
+        </div>
+      </div>
+
+      <div class="ds-divider"></div>
+      <h3>4.2 — Toggle / Switch (Plans: Monthly / Annual)</h3>
+      <div style="display:inline-flex;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:9999px;padding:3px;">
+        <button style="background:#c6f91f;color:#000;font-family:'Geist',sans-serif;font-size:0.75rem;font-weight:500;padding:0.375rem 1rem;border-radius:9999px;border:none;cursor:pointer;letter-spacing:-0.025em;">Monthly</button>
+        <button style="background:transparent;color:rgba(255,255,255,0.5);font-family:'Geist',sans-serif;font-size:0.75rem;font-weight:500;padding:0.375rem 1rem;border-radius:9999px;border:none;cursor:pointer;letter-spacing:-0.025em;">Annual</button>
+      </div>
+      <div class="component-row" style="margin-top:0.75rem;">
+        <span style="font-family:'Geist',sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.4);">Toggle ativo: bg #c6f91f · text black · border-radius: 9999px</span>
+      </div>
+    </section>
+
+    <!-- ========================================================== -->
+    <!-- SECTION 5: TABELAS E EXIBIÇÃO DE DADOS                     -->
+    <!-- ========================================================== -->
+    <section id="tabelas" class="ds-section">
+      <h2>Tabelas e Exibição de Dados</h2>
+      <p style="font-family:'Geist',sans-serif;color:rgba(255,255,255,0.5);font-size:0.875rem;margin-bottom:1.5rem;">
+        A aplicação de referência não possui tabelas de dados tabulares. Utiliza cards e grids para exibição de conteúdo. Os padrões de cards de dados são documentados abaixo.
+      </p>
+
+      <h3>5.1 — Pricing Cards (dados tabulares em formato de card)</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+        <!-- Standard Plan -->
+        <div style="border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);backdrop-filter:blur(12px);border-radius:0.75rem;padding:2rem;">
+          <div style="font-family:'Geist',sans-serif;font-size:1.25rem;font-weight:300;letter-spacing:-0.025em;color:#fff;margin-bottom:0.25rem;">Standard License</div>
+          <div style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.5);margin-bottom:2rem;">Perfect for solo designers.</div>
+          <div style="display:flex;align-items:flex-start;gap:0.25rem;margin-bottom:2rem;">
+            <span style="font-family:'Geist',sans-serif;font-size:1.25rem;color:rgba(255,255,255,0.5);margin-top:0.25rem;">$</span>
+            <span style="font-family:'Geist',sans-serif;font-size:3rem;font-weight:300;letter-spacing:-0.05em;color:#fff;">29</span>
+            <span style="font-family:'Geist',sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.4);align-self:flex-end;margin-bottom:0.5rem;">/ one-time</span>
+          </div>
+          <a href="#" style="display:block;text-align:center;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:500;letter-spacing:-0.025em;padding:0.75rem;border-radius:0.375rem;text-decoration:none;">Get Standard</a>
+        </div>
+
+        <!-- Team Plan (highlighted) -->
+        <div style="border:1px solid rgba(198,249,31,0.3);background:rgba(198,249,31,0.05);backdrop-filter:blur(12px);border-radius:0.75rem;padding:2rem;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:0;right:0;padding:0.25rem 0.75rem;background:#c6f91f;color:#000;font-size:0.625rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;font-family:'Geist',sans-serif;">Most Popular</div>
+          <div style="font-family:'Geist',sans-serif;font-size:1.25rem;font-weight:300;letter-spacing:-0.025em;color:#fff;margin-bottom:0.25rem;">Team License</div>
+          <div style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.6);margin-bottom:2rem;">For teams shipping together.</div>
+          <div style="display:flex;align-items:flex-start;gap:0.25rem;margin-bottom:2rem;">
+            <span style="font-family:'Geist',sans-serif;font-size:1.25rem;color:rgba(255,255,255,0.5);margin-top:0.25rem;">$</span>
+            <span style="font-family:'Geist',sans-serif;font-size:3rem;font-weight:300;letter-spacing:-0.05em;color:#fff;">99</span>
+            <span style="font-family:'Geist',sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.4);align-self:flex-end;margin-bottom:0.5rem;">/ one-time</span>
+          </div>
+          <a href="#" style="display:block;text-align:center;background:#c6f91f;color:#000;font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:500;letter-spacing:-0.025em;padding:0.75rem;border-radius:0.375rem;text-decoration:none;box-shadow:0 0 20px rgba(198,249,31,0.2);">Get Team Access</a>
+        </div>
+      </div>
+
+      <div class="ds-divider"></div>
+
+      <h3>5.2 — Lista de Features (Checklist)</h3>
+      <div style="display:flex;flex-direction:column;gap:0.75rem;max-width:320px;">
+        <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+          <iconify-icon icon="solar:check-circle-linear" style="color:rgba(255,255,255,0.5);font-size:1.125rem;margin-top:2px;"></iconify-icon>
+          <span style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.7);">Access to 42+ structured prompts</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+          <iconify-icon icon="solar:check-circle-linear" style="color:rgba(255,255,255,0.5);font-size:1.125rem;margin-top:2px;"></iconify-icon>
+          <span style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.7);">New templates added monthly</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+          <iconify-icon icon="solar:check-circle-bold-duotone" style="color:#c6f91f;font-size:1.125rem;margin-top:2px;"></iconify-icon>
+          <span style="font-family:'Geist',sans-serif;font-size:0.875rem;color:#ffffff;">Up to 5 team members</span>
+        </div>
+      </div>
+
+      <div class="ds-divider"></div>
+
+      <h3>5.3 — Testimonial Cards (Dados de depoimentos)</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+        <div style="border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);backdrop-filter:blur(12px);border-radius:0.75rem;padding:2rem;display:flex;flex-direction:column;">
+          <div style="display:flex;gap:2px;margin-bottom:1.5rem;color:#c6f91f;">
+            <iconify-icon icon="solar:star-bold" style="font-size:0.875rem;"></iconify-icon>
+            <iconify-icon icon="solar:star-bold" style="font-size:0.875rem;"></iconify-icon>
+            <iconify-icon icon="solar:star-bold" style="font-size:0.875rem;"></iconify-icon>
+            <iconify-icon icon="solar:star-bold" style="font-size:0.875rem;"></iconify-icon>
+            <iconify-icon icon="solar:star-bold" style="font-size:0.875rem;"></iconify-icon>
+          </div>
+          <p style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.7);line-height:1.625;margin-bottom:1.5rem;flex:1;">"I was skeptical paying for prompts, but the ROI was immediate."</p>
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <div style="width:36px;height:36px;border-radius:9999px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);"></div>
+            <div>
+              <div style="font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:300;letter-spacing:-0.025em;color:#fff;">David L.</div>
+              <div style="font-family:'Geist',sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.4);">Startup Founder</div>
+            </div>
+          </div>
+        </div>
+        <div style="border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);backdrop-filter:blur(12px);border-radius:0.75rem;padding:2rem;display:flex;flex-direction:column;">
+          <div style="display:flex;gap:2px;margin-bottom:1.5rem;color:#c6f91f;">
+            <iconify-icon icon="solar:star-bold" style="font-size:0.875rem;"></iconify-icon>
+            <iconify-icon icon="solar:star-bold" style="font-size:0.875rem;"></iconify-icon>
+            <iconify-icon icon="solar:star-bold" style="font-size:0.875rem;"></iconify-icon>
+            <iconify-icon icon="solar:star-bold" style="font-size:0.875rem;"></iconify-icon>
+            <iconify-icon icon="solar:star-bold" style="font-size:0.875rem;"></iconify-icon>
+          </div>
+          <p style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.7);line-height:1.625;margin-bottom:1.5rem;flex:1;">"As a developer with zero design skills, Lumimotion is my cheat code."</p>
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <div style="width:36px;height:36px;border-radius:9999px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);"></div>
+            <div>
+              <div style="font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:300;letter-spacing:-0.025em;color:#fff;">Elena M.</div>
+              <div style="font-family:'Geist',sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.4);">Full-stack Developer</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================== -->
+    <!-- SECTION 6: COMPONENTES DE UI                               -->
+    <!-- ========================================================== -->
+    <section id="componentes" class="ds-section">
+      <h2>Componentes de UI</h2>
+
+      <h3>6.1 — Botões</h3>
+      <h4>Variante Primary (Accent)</h4>
+      <div class="component-row">
+        <a href="#" style="background:#c6f91f;color:#000;font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:500;letter-spacing:-0.025em;text-decoration:none;padding:0.625rem 1.5rem;border-radius:0.375rem;box-shadow:0 0 20px rgba(198,249,31,0.2);transition:background 0.2s;">Default</a>
+        <a href="#" style="background:#aade17;color:#000;font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:500;letter-spacing:-0.025em;text-decoration:none;padding:0.625rem 1.5rem;border-radius:0.375rem;box-shadow:0 0 20px rgba(198,249,31,0.2);">Hover</a>
+        <a href="#" style="background:#c6f91f;color:#000;font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:500;letter-spacing:-0.025em;text-decoration:none;padding:0.625rem 1.5rem;border-radius:0.375rem;box-shadow:0 0 20px rgba(198,249,31,0.2);opacity:0.5;cursor:not-allowed;">Disabled</a>
+      </div>
+
+      <h4>Variante Outline / Ghost</h4>
+      <div class="component-row">
+        <a href="#" style="border:1px solid rgba(255,255,255,0.2);color:#fff;font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:500;letter-spacing:-0.025em;text-decoration:none;padding:0.625rem 1.5rem;border-radius:0.375rem;transition:background 0.2s;">Default</a>
+        <a href="#" style="border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.05);color:#fff;font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:500;letter-spacing:-0.025em;text-decoration:none;padding:0.625rem 1.5rem;border-radius:0.375rem;">Hover</a>
+        <a href="#" style="border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.3);font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:500;letter-spacing:-0.025em;text-decoration:none;padding:0.625rem 1.5rem;border-radius:0.375rem;cursor:not-allowed;">Disabled</a>
+      </div>
+
+      <h4>Variante Ghost (sem borda)</h4>
+      <div class="component-row">
+        <a href="#" style="color:rgba(255,255,255,0.7);font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:400;letter-spacing:-0.025em;text-decoration:none;padding:0.5rem 1rem;border-radius:0.375rem;transition:background 0.2s;">Default</a>
+        <a href="#" style="background:rgba(255,255,255,0.05);color:#fff;font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:400;letter-spacing:-0.025em;text-decoration:none;padding:0.5rem 1rem;border-radius:0.375rem;">Hover</a>
+      </div>
+
+      <h4>Botão com Ícone</h4>
+      <div class="component-row">
+        <a href="#" style="background:#c6f91f;color:#000;font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:500;letter-spacing:-0.025em;text-decoration:none;padding:0.625rem 1.5rem;border-radius:0.375rem;display:inline-flex;align-items:center;gap:0.75rem;box-shadow:0 0 36px rgba(198,249,31,0.42);">
+          Explore Free Prompts
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+        <a href="#" style="border:1px solid rgba(255,255,255,0.2);color:#fff;font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:500;letter-spacing:-0.025em;text-decoration:none;padding:0.625rem 1.5rem;border-radius:0.375rem;display:inline-flex;align-items:center;gap:0.5rem;">
+          <iconify-icon icon="solar:arrow-right-linear"></iconify-icon>
+          Compare Plans
+        </a>
+      </div>
+
+      <div class="ds-divider"></div>
+
+      <h3>6.2 — Badges / Tags / Status Pills</h3>
+      <div class="component-row">
+        <span style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.375rem 1rem;border:1px solid rgba(198,249,31,0.3);background:rgba(198,249,31,0.05);border-radius:9999px;font-family:'Geist',sans-serif;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.2em;color:#c6f91f;">
+          <span style="width:6px;height:6px;border-radius:9999px;background:#c6f91f;box-shadow:0 0 10px #c6f91f;"></span>
+          Premium
+        </span>
+        <span style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.375rem 1rem;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);border-radius:9999px;font-family:'Geist',sans-serif;font-size:0.7rem;font-weight:500;letter-spacing:0.025em;color:rgba(255,255,255,0.7);">
+          <span style="width:6px;height:6px;border-radius:9999px;background:rgba(255,255,255,0.3);"></span>
+          Built for modern teams
+        </span>
+      </div>
+
+      <div class="ds-divider"></div>
+
+      <h3>6.3 — FAQ / Accordion</h3>
+      <div style="border:1px solid rgba(255,255,255,0.1);border-radius:0.75rem;overflow:hidden;">
+        <div style="padding:1.25rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+          <span style="font-family:'Geist',sans-serif;font-size:1rem;font-weight:400;letter-spacing:-0.025em;color:rgba(255,255,255,0.8);">How does the prompt library work?</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div style="padding:0 1.5rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.06);">
+          <p style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.5);line-height:1.625;margin:0;">Each template contains structured, tested prompts organized by UI pattern. Copy, paste, and adapt to your project.</p>
+        </div>
+        <div style="padding:1.25rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+          <span style="font-family:'Geist',sans-serif;font-size:1rem;font-weight:400;letter-spacing:-0.025em;color:rgba(255,255,255,0.8);">Can I get a refund?</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+      </div>
+
+      <div class="ds-divider"></div>
+
+      <h3>6.4 — Avatar / User Badge</h3>
+      <div class="component-row">
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+          <div style="width:40px;height:40px;border-radius:9999px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);"></div>
+          <div>
+            <div style="font-family:'Geist',sans-serif;font-size:0.875rem;font-weight:300;letter-spacing:-0.025em;color:#fff;">David L.</div>
+            <div style="font-family:'Geist',sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.4);">Startup Founder</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+          <div style="width:48px;height:48px;border-radius:9999px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);"></div>
+          <div>
+            <div style="font-family:'Geist',sans-serif;font-size:1rem;font-weight:300;letter-spacing:-0.025em;color:#fff;">Elena M.</div>
+            <div style="font-family:'Geist',sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.4);">Full-stack Developer</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ds-divider"></div>
+
+      <h3>6.5 — Stats / Trust Bar</h3>
+      <div style="display:flex;align-items:center;gap:2rem;padding:1.5rem 2rem;border:1px solid rgba(255,255,255,0.1);border-radius:0.75rem;background:rgba(255,255,255,0.02);">
+        <div style="text-align:center;">
+          <div style="font-family:'Geist',sans-serif;font-size:1.5rem;font-weight:300;letter-spacing:-0.05em;color:#fff;">12k+</div>
+          <div style="font-family:'Geist',sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.4);">Active Users</div>
+        </div>
+        <div style="width:1px;height:32px;background:rgba(255,255,255,0.1);"></div>
+        <div style="text-align:center;">
+          <div style="font-family:'Geist',sans-serif;font-size:1.5rem;font-weight:300;letter-spacing:-0.05em;color:#fff;">150+</div>
+          <div style="font-family:'Geist',sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.4);">Templates</div>
+        </div>
+        <div style="width:1px;height:32px;background:rgba(255,255,255,0.1);"></div>
+        <div style="text-align:center;">
+          <div style="font-family:'Geist',sans-serif;font-size:1.5rem;font-weight:300;letter-spacing:-0.05em;color:#fff;">98%</div>
+          <div style="font-family:'Geist',sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.4);">Satisfaction</div>
+        </div>
+      </div>
+
+      <div class="ds-divider"></div>
+
+      <h3>6.6 — Loading / Spinner</h3>
+      <div class="component-row">
+        <svg class="animate-pulse" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c6f91f" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <span style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.5);">Loading indicator (pulse animation)</span>
+      </div>
+    </section>
+
+    <!-- ========================================================== -->
+    <!-- SECTION 7: LAYOUT E ESPAÇAMENTO                            -->
+    <!-- ========================================================== -->
+    <section id="layout" class="ds-section">
+      <h2>Layout e Espaçamento</h2>
+
+      <h3>7.1 — Estrutura do Shell</h3>
+      <table class="spec-table">
+        <thead>
+          <tr><th>Elemento</th><th>Largura / Proporção</th><th>Detalhes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Container Máximo</td><td>max-w-6xl (72rem / 1152px)</td><td>Centralizado com mx-auto · padding lateral px-6</td></tr>
+          <tr><td>Container Hero</td><td>max-w-[1360px]</td><td>Seções maiores usam 1360px de largura máxima</td></tr>
+          <tr><td>Navbar</td><td>w-full · fixed top-0</td><td>z-50 · backdrop-blur-md · bg-[#05080A]/90</td></tr>
+          <tr><td>Seções</td><td>w-full</td><td>py-24 (96px) a py-32 (128px) · border-b white/10</td></tr>
+        </tbody>
+      </table>
+
+      <h3>7.2 — Grid de Cards</h3>
+      <table class="spec-table">
+        <thead>
+          <tr><th>Contexto</th><th>Grid</th><th>Gap</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Pricing Cards</td><td>grid-cols-1 lg:grid-cols-12</td><td>gap-6 lg:gap-8</td></tr>
+          <tr><td>Feature Cards (Hero)</td><td>grid-cols-1 md:grid-cols-2 lg:grid-cols-3</td><td>gap-4</td></tr>
+          <tr><td>Testimonials</td><td>grid-cols-1 md:grid-cols-2</td><td>gap-4</td></tr>
+          <tr><td>Stats Bar</td><td>flex com gap-8</td><td>align-items: center</td></tr>
+          <tr><td>Footer Columns</td><td>grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]</td><td>gap-8</td></tr>
+        </tbody>
+      </table>
+
+      <h3>7.3 — Layout de Card (padrão consistente)</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+        <div style="border:1px solid rgba(255,255,255,0.1);border-radius:0.75rem;background:rgba(255,255,255,0.03);padding:1.5rem;backdrop-filter:blur(12px);transition:border-color 0.3s;">
+          <div style="width:40px;height:40px;border-radius:0.375rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+            <iconify-icon icon="solar:buildings-2-linear" style="color:rgba(255,255,255,0.6);font-size:1.25rem;"></iconify-icon>
+          </div>
+          <div style="font-family:'Geist',sans-serif;font-weight:300;font-size:1.125rem;letter-spacing:-0.025em;color:#fff;margin-bottom:0.5rem;">Dashboard UI</div>
+          <div style="font-family:'Geist',sans-serif;font-size:0.8125rem;color:rgba(255,255,255,0.5);line-height:1.625;">Production-ready metrics and analytics views.</div>
+        </div>
+        <div style="border:1px solid rgba(255,255,255,0.1);border-radius:0.75rem;background:rgba(255,255,255,0.03);padding:1.5rem;backdrop-filter:blur(12px);">
+          <div style="width:40px;height:40px;border-radius:0.375rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+            <iconify-icon icon="solar:buildings-2-linear" style="color:rgba(255,255,255,0.6);font-size:1.25rem;"></iconify-icon>
+          </div>
+          <div style="font-family:'Geist',sans-serif;font-weight:300;font-size:1.125rem;letter-spacing:-0.025em;color:#fff;margin-bottom:0.5rem;">Mobile App</div>
+          <div style="font-family:'Geist',sans-serif;font-size:0.8125rem;color:rgba(255,255,255,0.5);line-height:1.625;">Native-quality mobile app interface patterns.</div>
+        </div>
+        <div style="border:1px solid rgba(255,255,255,0.1);border-radius:0.75rem;background:rgba(255,255,255,0.03);padding:1.5rem;backdrop-filter:blur(12px);">
+          <div style="width:40px;height:40px;border-radius:0.375rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+            <iconify-icon icon="solar:buildings-2-linear" style="color:rgba(255,255,255,0.6);font-size:1.25rem;"></iconify-icon>
+          </div>
+          <div style="font-family:'Geist',sans-serif;font-weight:300;font-size:1.125rem;letter-spacing:-0.025em;color:#fff;margin-bottom:0.5rem;">Design System</div>
+          <div style="font-family:'Geist',sans-serif;font-size:0.8125rem;color:rgba(255,255,255,0.5);line-height:1.625;">Component architecture and token structures.</div>
+        </div>
+      </div>
+
+      <h3>7.4 — Layout de Enterprise Solutions (grid misto)</h3>
+      <div style="display:grid;grid-template-columns:1.2fr 0.8fr;gap:1.5rem;">
+        <div style="border:1px solid rgba(255,255,255,0.1);border-radius:0.75rem;padding:2rem;background:rgba(255,255,255,0.03);backdrop-filter:blur(12px);">
+          <div style="font-family:'Geist',sans-serif;font-weight:300;font-size:1.25rem;letter-spacing:-0.025em;color:#fff;margin-bottom:0.5rem;">Enterprise Solutions</div>
+          <div style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.5);line-height:1.625;">Need a dedicated prompt system modeled exactly to your company's internal UI library?</div>
+        </div>
+        <div style="border:1px solid rgba(198,249,31,0.3);border-radius:0.75rem;padding:2rem;background:rgba(198,249,31,0.05);backdrop-filter:blur(12px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+          <div style="font-family:'Geist',sans-serif;font-weight:300;font-size:1.5rem;letter-spacing:-0.05em;color:#c6f91f;">Custom Plan</div>
+          <div style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.5);margin-top:0.5rem;">Contact Sales</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================== -->
+    <!-- SECTION 8: MOTION E INTERAÇÃO                              -->
+    <!-- ========================================================== -->
+    <section id="motion" class="ds-section">
+      <h2>Motion e Interação</h2>
+      <p style="font-family:'Geist',sans-serif;color:rgba(255,255,255,0.5);font-size:0.875rem;margin-bottom:1.5rem;">
+        A aplicação usa <strong style="color:#fff;">GSAP 3.12.7</strong> + <strong style="color:#fff;">ScrollTrigger</strong> para animações de entrada. Abaixo estão as classes de animação presentes no CSS original.
+      </p>
+
+      <h3>8.1 — Entry Animations (CSS Keyframes)</h3>
+      <table class="spec-table">
+        <thead>
+          <tr><th>Classe / Animação</th><th>Descrição</th><th>Duração / Easing</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>.animate-blur-in</code></td><td>Opacidade 0→1 + blur 12px→0 + translateY 40px→0</td><td>0.8s ease-out</td></tr>
+          <tr><td><code>.animate-fade-in</code></td><td>Opacidade 0→1 simples</td><td>0.6s ease-out</td></tr>
+          <tr><td><code>.animate-slide-in</code></td><td>Opacidade 0→1 + translateY 20px→0</td><td>0.6s ease-out</td></tr>
+          <tr><td><code>.char-slide-down</code></td><td>Caractere desce de translateY(-100%) para 0 com opacidade</td><td>0.5s ease-out · delay escalonado</td></tr>
+        </tbody>
+      </table>
+
+      <h3>8.2 — GSAP Word Reveal</h3>
+      <div style="font-family:'Geist',sans-serif;font-size:2.25rem;font-weight:300;letter-spacing:-0.05em;color:#fff;">
+        <span class="gsap-reveal-wrapper inline-block mr-[0.25em] relative" style="overflow:hidden;">
+          <span class="gsap-word-reveal inline-block" style="display:inline-block;animation:blurFadeIn 0.6s ease-out forwards;">Lifetime</span>
+        </span>
+        <span class="gsap-reveal-wrapper inline-block mr-[0.25em] relative" style="overflow:hidden;">
+          <span class="gsap-word-reveal inline-block" style="display:inline-block;animation:blurFadeIn 0.6s ease-out 0.15s forwards;opacity:0;">access.</span>
+        </span>
+      </div>
+      <p style="font-family:'Geist',sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.4);margin-top:0.5rem;">
+        Palavras reveladas com blur + translateY, escalonadas com delay. Classe: <code>.gsap-word-reveal</code> + <code>.gsap-reveal-wrapper</code>
+      </p>
+
+      <div class="ds-divider"></div>
+
+      <h3>8.3 — Flashlight Effect (Hover nos Cards)</h3>
+      <div class="flashlight-target" style="border:1px solid rgba(255,255,255,0.1);border-radius:0.75rem;padding:2rem;max-width:400px;background:rgba(255,255,255,0.03);">
+        <div class="flashlight-content" style="position:relative;z-index:2;">
+          <div style="font-family:'Geist',sans-serif;font-weight:300;font-size:1.125rem;letter-spacing:-0.025em;color:#fff;">Passe o mouse aqui</div>
+          <div style="font-family:'Geist',sans-serif;font-size:0.875rem;color:rgba(255,255,255,0.5);margin-top:0.5rem;">O efeito flashlight acende a borda com um glow verde (#c6f91f 15%)</div>
+        </div>
+      </div>
+
+      <div class="ds-divider"></div>
+
+      <h3>8.4 — Hover Transitions</h3>
+      <table class="spec-table">
+        <thead>
+          <tr><th>Elemento</th><th>Efeito Hover</th><th>Transição</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Card</td><td>border-color white/10 → white/20</td><td>duration-300 (0.3s)</td></tr>
+          <tr><td>Botão Primary</td><td>bg #c6f91f → #aade17</td><td>transition-colors</td></tr>
+          <tr><td>Botão Outline</td><td>border white/20 → white/30 · bg white/0 → white/5</td><td>transition-all</td></tr>
+          <tr><td>Nav Link</td><td>color white/55 → white/80</td><td>transition-colors</td></tr>
+          <tr><td>Icon in Card</td><td>color white/70 → white</td><td>transition-colors</td></tr>
+          <tr><td>Footer Link</td><td>color white/55 → white</td><td>transition-colors</td></tr>
+        </tbody>
+      </table>
+
+      <h3>8.5 — Galeria de Motion</h3>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+        <div class="animate-blur-in" style="padding:0.75rem 1.5rem;border:1px solid rgba(255,255,255,0.1);border-radius:0.375rem;">
+          <span style="font-family:'Geist',sans-serif;font-size:0.875rem;color:#fff;">blur-in</span>
+        </div>
+        <div class="animate-fade-in stagger-2" style="padding:0.75rem 1.5rem;border:1px solid rgba(255,255,255,0.1);border-radius:0.375rem;">
+          <span style="font-family:'Geist',sans-serif;font-size:0.875rem;color:#fff;">fade-in</span>
+        </div>
+        <div class="animate-slide-in stagger-4" style="padding:0.75rem 1.5rem;border:1px solid rgba(255,255,255,0.1);border-radius:0.375rem;">
+          <span style="font-family:'Geist',sans-serif;font-size:0.875rem;color:#fff;">slide-in</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================== -->
+    <!-- SECTION 9: ÍCONES                                          -->
+    <!-- ========================================================== -->
+    <section id="icones" class="ds-section">
+      <h2>Ícones</h2>
+      <p style="font-family:'Geist',sans-serif;color:rgba(255,255,255,0.5);font-size:0.875rem;margin-bottom:1.5rem;">
+        A aplicação usa <strong style="color:#fff;">Iconify Web Component Runtime</strong> com o conjunto de ícones <strong style="color:#fff;">Solar</strong> (via Iconify) e <strong style="color:#fff;">Lucide React</strong>. Os ícones herdam a cor via <code>currentColor</code>.
+      </p>
+
+      <h3>Ícones de Navegação</h3>
+      <div class="component-row">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c6f91f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m12 3 9 4.5-9 4.5-9-4.5L12 3Z"/><path d="m3 12 9 4.5 9-4.5"/><path d="m3 16.5 9 4.5 9-4.5"/>
+          </svg>
+          <span class="component-label">Logo / Layers</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <iconify-icon icon="solar:arrow-right-linear" style="font-size:1.25rem;color:rgba(255,255,255,0.6);"></iconify-icon>
+          <span class="component-label">Arrow Right</span>
+        </div>
+      </div>
+
+      <h3>Ícones de Ação</h3>
+      <div class="component-row">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <iconify-icon icon="solar:check-circle-linear" style="font-size:1.25rem;color:rgba(255,255,255,0.5);"></iconify-icon>
+          <span class="component-label">Check (linear)</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <iconify-icon icon="solar:check-circle-bold-duotone" style="font-size:1.25rem;color:#c6f91f;"></iconify-icon>
+          <span class="component-label">Check (bold)</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <iconify-icon icon="solar:star-bold" style="font-size:1rem;color:#c6f91f;"></iconify-icon>
+          <span class="component-label">Star (rating)</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <iconify-icon icon="solar:buildings-2-linear" style="font-size:1.25rem;color:rgba(255,255,255,0.6);"></iconify-icon>
+          <span class="component-label">Building</span>
+        </div>
+      </div>
+
+      <h3>Ícones Sociais (Footer)</h3>
+      <div class="component-row">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/>
+          </svg>
+          <span class="component-label">LinkedIn</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5a4.5 4.5 0 0 0-1.2-3.1A4.2 4.2 0 0 0 18.7 3s-1 0-3 1.5a10.2 10.2 0 0 0-5.4 0C8.3 3 7.3 3 7.3 3a4.2 4.2 0 0 0-.1 2.9A4.5 4.5 0 0 0 6 9c0 3.5 3 5.5 6 5.5a4.8 4.8 0 0 0-1 3.5v4"/><path d="M9 18c-4.5 2-5-2-7-2"/>
+          </svg>
+          <span class="component-label">GitHub</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/>
+          </svg>
+          <span class="component-label">Social Icon</span>
+        </div>
+      </div>
+
+      <div class="ds-divider"></div>
+
+      <h3>Ícones de Status</h3>
+      <div class="component-row">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#55e154" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 13c0 5-3.5 7.5-7.7 8.9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.5a1.3 1.3 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1v7Z"/><path d="m9 12 2 2 4-4"/>
+          </svg>
+          <span class="component-label">Shield / Secure</span>
+        </div>
+      </div>
+
+      <div class="ds-divider"></div>
+
+      <h3>Lucide Icons (via React, mas mostrados como SVG)</h3>
+      <div class="component-row">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+        </svg>
+        <span class="component-label">ArrowRight (Lucide)</span>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // Nav active state on scroll
+    const sections = document.querySelectorAll('.ds-section');
+    const navLinks = document.querySelectorAll('.ds-nav a');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + entry.target.id) {
+              link.classList.add('active');
+            }
+          });
+        }
+      });
+    }, { threshold: 0.3 });
+    sections.forEach(s => observer.observe(s));
+  </script>
+
+</body>
+</html>

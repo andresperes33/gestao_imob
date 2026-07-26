@@ -1,0 +1,138 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Gestão Imob{% endblock %}</title>
+  <meta name="description" content="{% block description %}Sistema de gestão imobiliária{% endblock %}">
+
+  {% block fonts %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>.font-geist { font-family: 'Geist', sans-serif !important; }</style>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  {% endblock %}
+
+  {% block tailwind %}
+  <script src="https://cdn.tailwindcss.com"></script>
+  {% endblock %}
+
+  {% block iconify %}
+  <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+  {% endblock %}
+
+  {% block extra_head %}{% endblock %}
+
+  <style>
+    :root {
+      --color-bg-primary: #05080A;
+      --color-bg-secondary: #070A0D;
+      --color-bg-card: rgba(255, 255, 255, 0.03);
+      --color-bg-card-hover: rgba(255, 255, 255, 0.05);
+      --color-border: rgba(255, 255, 255, 0.1);
+      --color-border-hover: rgba(255, 255, 255, 0.2);
+      --color-accent: #c6f91f;
+      --color-accent-hover: #aade17;
+      --color-text-primary: #ffffff;
+      --color-text-secondary: rgba(255, 255, 255, 0.55);
+      --color-text-muted: rgba(255, 255, 255, 0.4);
+      --color-success: #55e154;
+      --color-error: #fb7c68;
+      --color-warning: #f59e0b;
+      --color-info: #3b82f6;
+    }
+
+    html.dark {
+      font-family: 'Inter', system-ui, sans-serif;
+      color-scheme: dark;
+    }
+
+    body {
+      background-color: var(--color-bg-primary);
+      color: var(--color-text-primary);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .text-balance { text-wrap: balance; }
+    .text-pretty { text-wrap: pretty; }
+
+    .flashlight-target {
+      position: relative;
+      overflow: hidden;
+    }
+    .flashlight-target::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      background: radial-gradient(600px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(198, 249, 31, 0.15), transparent 40%);
+      border-radius: inherit;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+    .flashlight-target::after {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      background: radial-gradient(800px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(255, 255, 255, 0.02), transparent 40%);
+      border-radius: inherit;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+    .flashlight-content {
+      position: relative;
+      z-index: 2;
+      background-color: transparent;
+      height: 100%;
+      width: 100%;
+      border-radius: inherit;
+    }
+    .flashlight-target:hover::before,
+    .flashlight-target:hover::after {
+      opacity: 1;
+    }
+
+    @keyframes blurFadeIn {
+      0%   { opacity: 0; filter: blur(12px); transform: translateY(40px); }
+      100% { opacity: 1; filter: blur(0); transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      0%   { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    @keyframes slideIn {
+      0%   { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-blur-in { animation: blurFadeIn 0.8s ease-out forwards; }
+    .animate-fade-in { animation: fadeIn 0.6s ease-out forwards; }
+    .animate-slide-in { animation: slideIn 0.6s ease-out forwards; }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    ::selection {
+      background-color: var(--color-accent);
+      color: #000000;
+    }
+  </style>
+</head>
+<body class="antialiased">
+  {% block body %}
+  <div class="min-h-screen flex flex-col">
+    {% block header %}{% endblock %}
+    {% block content %}{% endblock %}
+    {% block footer %}{% endblock %}
+  </div>
+  {% endblock %}
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>
