@@ -425,15 +425,15 @@ Encerrar Locação
 
 ### Sprint 2 — Autenticação e Primeiro Acesso
 
-- [ ] Criar `apps/accounts/models.py` (Custom User ou estender User padrão com campo `is_tenant`)
-- [ ] Criar `apps/accounts/forms.py` (LoginForm, FirstAccessPasswordChangeForm)
-- [ ] Criar `apps/accounts/views.py` (LoginView, LogoutView, FirstAccessView)
-- [ ] Criar `apps/accounts/urls.py` com rotas de login/logout/troca-senha
-- [ ] Criar template `login.html` responsivo
-- [ ] Criar template `first_access.html` (troca de senha obrigatória)
-- [ ] Criar `apps/accounts/backends.py` (autenticação por username ou e-mail)
-- [ ] Configurar `LOGIN_URL`, `LOGIN_REDIRECT_URL`, `LOGOUT_REDIRECT_URL`
-- [ ] Testar fluxo completo: login → primeiro acesso → redefinir senha → painel
+- [x] Criar `apps/accounts/models.py` (UserProfile com `is_tenant`, `must_change_password`)
+- [x] Criar `apps/accounts/forms.py` (LoginForm, FirstAccessPasswordChangeForm)
+- [x] Criar `apps/accounts/views.py` (LoginView, LogoutView, FirstAccessView, DashboardView)
+- [x] Criar `apps/accounts/urls.py` com rotas de login/logout/troca-senha/dashboard
+- [x] Criar template `login.html` responsivo (Lumion design system)
+- [x] Criar template `first_access.html` (troca de senha obrigatória)
+- [x] Criar `apps/accounts/backends.py` (autenticação por username ou e-mail)
+- [x] Configurar `AUTHENTICATION_BACKENDS`, `LOGIN_URL`, `LOGIN_REDIRECT_URL`, `LOGOUT_REDIRECT_URL`
+- [x] Testar fluxo completo: login → primeiro acesso → redefinir senha → painel (11/11 testes)
 
 ### Sprint 3 — Multitenant e App Tenants
 

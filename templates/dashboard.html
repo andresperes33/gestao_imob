@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard — Gestão Imob{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex flex-col">
+  <header class="border-b" style="border-color:var(--color-border);background:var(--color-bg-secondary);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m12 3 9 4.5-9 4.5-9-4.5L12 3Z"/><path d="m3 12 9 4.5 9-4.5"/><path d="m3 16.5 9 4.5 9-4.5"/>
+          </svg>
+          <span class="text-lg font-light tracking-tight" style="font-family:'Geist',sans-serif;letter-spacing:-0.05em;">Gestão Imob</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <span class="text-sm" style="color:var(--color-text-secondary);">{{ request.user.get_full_name|default:request.user.username }}</span>
+          <a href="{% url 'logout' %}" class="text-sm px-4 py-1.5 rounded-lg transition-all" style="border:1px solid var(--color-border);color:var(--color-text-secondary);font-family:'Geist',sans-serif;">Sair</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="animate-blur-in">
+        <h1 class="text-3xl font-light tracking-tight mb-2" style="font-family:'Geist',sans-serif;letter-spacing:-0.05em;">Dashboard</h1>
+        <p class="text-sm mb-12" style="color:var(--color-text-secondary);">Bem-vindo ao painel de controle, {{ request.user.first_name|default:request.user.username }}.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <div class="rounded-xl p-6 border" style="background:var(--color-bg-card);border-color:var(--color-border);">
+            <div class="text-sm mb-1" style="color:var(--color-text-muted);font-family:'Geist',sans-serif;">Imóveis</div>
+            <div class="text-3xl font-light tracking-tight" style="font-family:'Geist',sans-serif;letter-spacing:-0.05em;">—</div>
+          </div>
+          <div class="rounded-xl p-6 border" style="background:var(--color-bg-card);border-color:var(--color-border);">
+            <div class="text-sm mb-1" style="color:var(--color-text-muted);font-family:'Geist',sans-serif;">Locações Ativas</div>
+            <div class="text-3xl font-light tracking-tight" style="font-family:'Geist',sans-serif;letter-spacing:-0.05em;">—</div>
+          </div>
+          <div class="rounded-xl p-6 border" style="background:var(--color-bg-card);border-color:var(--color-border);">
+            <div class="text-sm mb-1" style="color:var(--color-text-muted);font-family:'Geist',sans-serif;">Financeiro (mês)</div>
+            <div class="text-3xl font-light tracking-tight" style="font-family:'Geist',sans-serif;letter-spacing:-0.05em;">—</div>
+          </div>
+        </div>
+
+        <div class="rounded-xl p-8 border text-center" style="background:var(--color-bg-card);border-color:var(--color-border);">
+          <p style="color:var(--color-text-muted);">Os módulos de imóveis, locações e financeiro serão disponibilizados nas próximas sprints.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

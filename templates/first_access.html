@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Primeiro Acesso — Gestão Imob{% endblock %}
+
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center px-4 py-12">
+  <div class="flashlight-target w-full max-w-sm">
+    <div class="flashlight-content">
+      <div class="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-8 backdrop-blur-md">
+        <div class="text-center mb-8">
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4">
+            <rect width="20" height="14" x="2" y="5" rx="2"/><path d="M12 10v4"/><path d="M2 10h20"/>
+          </svg>
+          <h1 class="text-2xl font-light tracking-tight" style="font-family:'Geist',sans-serif;letter-spacing:-0.05em;">Primeiro Acesso</h1>
+          <p class="text-sm mt-1" style="color:var(--color-text-secondary);">Você precisa criar uma nova senha para continuar.</p>
+        </div>
+
+        <form method="post" class="space-y-5">
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+          <div class="p-3 rounded-lg text-sm" style="background:rgba(251,124,104,0.08);border:1px solid rgba(251,124,104,0.3);color:var(--color-error);">
+            {% for error in form.non_field_errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <div>
+            <label for="{{ form.old_password.id_for_label }}" class="block text-sm font-medium mb-1.5" style="color:var(--color-text-secondary);font-family:'Geist',sans-serif;">
+              {{ form.old_password.label }}
+            </label>
+            {{ form.old_password }}
+            {% if form.old_password.errors %}
+            <p class="mt-1 text-xs" style="color:var(--color-error);">{{ form.old_password.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <div>
+            <label for="{{ form.new_password1.id_for_label }}" class="block text-sm font-medium mb-1.5" style="color:var(--color-text-secondary);font-family:'Geist',sans-serif;">
+              {{ form.new_password1.label }}
+            </label>
+            {{ form.new_password1 }}
+            {% if form.new_password1.errors %}
+            <p class="mt-1 text-xs" style="color:var(--color-error);">{{ form.new_password1.errors.0 }}</p>
+            {% endif %}
+            <div class="mt-1 text-xs" style="color:var(--color-text-muted);">Mínimo de 8 caracteres. Não pode ser muito comum ou similar ao nome.</div>
+          </div>
+
+          <div>
+            <label for="{{ form.new_password2.id_for_label }}" class="block text-sm font-medium mb-1.5" style="color:var(--color-text-secondary);font-family:'Geist',sans-serif;">
+              {{ form.new_password2.label }}
+            </label>
+            {{ form.new_password2 }}
+            {% if form.new_password2.errors %}
+            <p class="mt-1 text-xs" style="color:var(--color-error);">{{ form.new_password2.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="w-full py-2.5 rounded-lg font-medium text-sm transition-all duration-200" style="background:var(--color-accent);color:#000000;font-family:'Geist',sans-serif;letter-spacing:-0.025em;box-shadow:0 0 20px rgba(198,249,31,0.2);">
+            Criar nova senha
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const target = document.querySelector('.flashlight-target');
+    if (target) {
+      target.addEventListener('mousemove', function(e) {
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        this.style.setProperty('--mouse-x', x + 'px');
+        this.style.setProperty('--mouse-y', y + 'px');
+      });
+    }
+  })();
+</script>
+{% endblock %}
